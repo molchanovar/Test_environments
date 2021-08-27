@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+  config.vm.define "nginx" do |nginx|
+    nginx.vm.network "private_network", ip: "10.83.79.122"
+    nginx.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 2
+    end
+    nginx.vm.hostname = "nginx"
+	nginx.vm.network "forwarded_port", guest: 22, host: 2301
+	nginx.vm.provision "shell", run: "always", inline: <<-SHELL
+      sudo sed -i "s/.*PasswordAuthentication\ no/PasswordAuthentication\ yes/g" /etc/ssh/sshd_config
+      sudo systemctl restart sshd
+	  sudo yum update; sudo yum install -y vim nginx nc net-tools
+	  SHELL
+  end
+
+  config.vm.define "apache" do |apache|
+    apache.vm.network "private_network", ip: "10.83.79.123"
+    apache.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 2
+    end
+    apache.vm.hostname = "apache"
+	apache.vm.network "forwarded_port", guest: 22, host: 2302
+	apache.vm.provision "shell", run: "always", inline: <<-SHELL
+    sudo sed -i "s/.*PasswordAuthentication\ no/PasswordAuthentication\ yes/g" /etc/ssh/sshd_config
+    sudo systemctl restart sshd
+	sudo yum update; sudo yum install -y vim httpd nc net-tools
+	SHELL
+  end
+end
