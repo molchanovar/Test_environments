@@ -2,7 +2,7 @@
 Test_labs 
 
 ## 1. Nginx front-end to apache web
- - Apache back-end and starts cgi-scripts
+ - Apache as a back-end and runs cgi-scripts
 
 nginx.conf
 ```
